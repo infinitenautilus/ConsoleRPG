@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ConsoleRPG.Core;
 using ConsoleRPG.Core.Library;
 
-namespace ConsoleRPG.Core.Library.World.Arlith.Rooms
+namespace ConsoleRPG.Library.World.Arlith.Rooms
 {
     public class ArlithSmithy : Room
     {

@@ -7,9 +7,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Core\Library\World\Arlith\Agents\" />
-    <Folder Include="Core\Library\World\Arlith\Items\" />
-  </ItemGroup>
-
 </Project>
