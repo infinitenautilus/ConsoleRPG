@@ -8,6 +8,13 @@ namespace ConsoleRPG.Core.Library.Components
 {
     public class PrimaryNounComponent
     {
-        string primaryNoun { get; set; }
+        string primaryNoun;
+
+        public PrimaryNounComponent(string noun)
+        {
+            primaryNoun = noun;
+        }
+
+        public string GetPrimaryNoun() { return primaryNoun; }
     }
 }

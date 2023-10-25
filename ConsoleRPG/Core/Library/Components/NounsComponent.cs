@@ -9,6 +9,7 @@ namespace ConsoleRPG.Core.Library.Components
     public class NounsComponent
     {
         public List<string> NounList { get; set; } = new();
+
         public NounsComponent()
         {
 
