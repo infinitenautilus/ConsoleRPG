@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ConsoleRPG.Core.Library
 {
-    public class Actor : Item
+    public class Actor
     {
         private static int id = 0;
         public int ActorId { get; private set; }
