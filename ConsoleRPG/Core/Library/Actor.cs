@@ -18,6 +18,11 @@ namespace ConsoleRPG.Core.Library
 
         public Room CurrentRoom = TheVoid.Instance;
 
+        public Actor() : base()
+        {
+
+        }
+
         public Actor(string shortName, string longDesc) : base(shortName, longDesc)
         {
             ShortName = shortName;

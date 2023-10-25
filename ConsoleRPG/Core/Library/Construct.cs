@@ -15,6 +15,11 @@ namespace ConsoleRPG.Core.Library
         
         public int ConstructId { get; private set; }
 
+        public Construct()
+        {
+
+        }
+
         public Construct(string primaryNoune, string desc)
         {
             ShortName = primaryNoune;

@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ConsoleRPG.Core.GlobalFuncs;
+using System.Globalization;
 
 using static System.Console;
+
 
 namespace ConsoleRPG.Core.Commands
 {
@@ -14,116 +16,48 @@ namespace ConsoleRPG.Core.Commands
     {
         public string CommandName => "look";
         
+        const int LastActorIndexOffset = 1;
+        const int SecondLastActorIndexOffset = 2;
+
         public void ExecuteCommand(string input, Player user)
         {
-            StringBuilder frog = new();
-                        
-            frog.Append("You look around you, and see...\n");
-            frog.Append(user.CurrentRoom.ShortName + "\n");
-            frog.Append(user.CurrentRoom.Description + "\n");
 
-            //Get the actors names organized in alphabetical order
+            StringBuilder lookString = new();
+
+            lookString.Append($"You look around you and see...\n{user.CurrentRoom.ShortName}\n{user.CurrentRoom.Description}\n");
+
             List<Actor> actorsInRoom = user.CurrentRoom.ListOfActors();
-
             actorsInRoom.Remove(user);
 
-            int index = 0;
+            StringBuilder actorDescription = GetActorLookList(actorsInRoom);
 
-            StringBuilder foo = new();
-
-            if (actorsInRoom.Count == 1 && actorsInRoom[index].ProperNoun)
+            if(actorDescription.Length > 1)
             {
-                foo.Append($"{actorsInRoom[index].ShortName} is here.");                
-            }
-            else if(actorsInRoom.Count == 1 && !actorsInRoom[index].ProperNoun)
-            {
-                foo.Append($"{ArticleHelper.GetArticle(actorsInRoom[index].ShortName).ToUpper()}{actorsInRoom[index].ShortName} is here.");
-            }
-            else
-            {
-                foreach (Actor a in actorsInRoom)
-                {
-
-                    if (index == 0)
-                    {
-                        foo.Append($"{ArticleHelper.GetArticle(actorsInRoom[index].ShortName).ToUpper()}");
-                    }
-
-                    if(actorsInRoom.Count > 1)
-                    {
-                        if (actorsInRoom[index].ProperNoun)
-                        {
-                            foo.Append($"{actorsInRoom[index].ShortName}");
-                        }
-                        else
-                        {
-                            foo.Append($"{ArticleHelper.GetArticle(actorsInRoom[index].ShortName)}{actorsInRoom[index].ShortName}");
-                        }
-
-                        if(index == actorsInRoom.Count -1)
-                        {
-                            foo.Append(".");
-                        }
-                        else if(index == actorsInRoom.Count - 2)
-                        {
-                            foo.Append(", and ");
-                        }
-                        else
-                        {
-                            if(actorsInRoom.Count > 1)
-                            {
-                                foo.Append(" are here.");
-                            }
-                            else
-                            {
-                                foo.Append(" is here.");
-                            }
-                        }
-                    }
-                    index++;
-                }
-            }
-           
-
-
-            if(foo.Length > 1)
-            {
-                frog.Append(foo.ToString());
-                frog.Append("\n");
+                lookString.Append(actorDescription.ToString());
+                lookString.Append("\n");
             }
 
             List<Item> itemsInRoom = user.CurrentRoom.ListOfItems();
 
-            foo = new();
-
-            for(int i = 0;i < itemsInRoom.Count; i++)
+            StringBuilder itemDescription = GetItemLookList(itemsInRoom);
+            
+            if(itemDescription.Length > 1)
             {
-                if (i == 0)
-                    foo.Append($"{ArticleHelper.GetArticle(itemsInRoom[i].ShortName).ToUpper()}{itemsInRoom[i].ShortName}");
-                else
-                    foo.Append($"{ArticleHelper.GetArticle(itemsInRoom[i].ShortName)}{itemsInRoom[i].ShortName}");
-
-                if (i == itemsInRoom.Count - 1)
-                {
-                    foo.Append(".");
-                }
-               else if(i == itemsInRoom.Count - 2)
-                {
-                    foo.Append(", and ");
-                }
-               else
-                {
-                    foo.Append(", ");
-                }
-
-            }
-            if(foo.Length > 1)
-            {
-                frog.Append(foo.ToString());
-                frog.Append("\n");
+                lookString.Append(itemDescription.ToString());
+                lookString.Append("\n");
             }
 
-            WriteLine(frog.ToString());
+            List <RoomExit> exitsInRoom = user.CurrentRoom.RoomExits;
+
+            StringBuilder exitString = GetRoomExitList(exitsInRoom);
+
+            if(exitString.Length > 1)
+            {
+                lookString.Append(exitString.ToString());
+                lookString.Append("\n");
+            }
+
+            Write(lookString.ToString());
         }
 
         public void HandleCommand(string command, Player user)
@@ -131,6 +65,134 @@ namespace ConsoleRPG.Core.Commands
             if(command.StartsWith(CommandName, StringComparison.OrdinalIgnoreCase))
             {
                 ExecuteCommand(command, user);
+            }
+        }
+
+        private StringBuilder GetActorLookList(List<Actor> actorsInRoom)
+        {
+            StringBuilder actorString = new StringBuilder();
+            actorsInRoom.Sort((actor1, actor2) => string.Compare(actor1.ShortName, actor2.ShortName));
+
+            for (int i = 0; i < actorsInRoom.Count; i++)
+            {
+                Actor actor = actorsInRoom[i];
+                string actorDescription;
+
+                if (actor.ProperNoun)
+                {
+                    actorDescription = actor.ShortName;
+                }
+                else
+                {
+                    actorDescription = $"{ArticleHelper.GetArticle(actor.ShortName)}{actor.ShortName}";
+                }
+
+                if (i == 0)
+                {
+                    actorDescription = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(actorDescription);
+                }
+
+                actorString.Append(actorDescription);
+
+                if (i == actorsInRoom.Count - 1)
+                {
+                    actorString.Append(actorsInRoom.Count > 1 ? " are here." : " is here.");
+                }
+                else if (i == actorsInRoom.Count - 2)
+                {
+                    actorString.Append(", and ");
+                }
+                else
+                {
+                    actorString.Append(", ");
+                }
+            }
+
+            return actorString;
+        }
+
+
+        private StringBuilder GetItemLookList(List<Item> itemsInRoom)
+        {
+            StringBuilder itemString = new StringBuilder();
+            itemsInRoom.Sort((item1, item2) => string.Compare(item1.ShortName, item2.ShortName));
+
+            for (int i = 0; i < itemsInRoom.Count; i++)
+            {
+                Item item = itemsInRoom[i];
+                string itemDescription = $"{ArticleHelper.GetArticle(item.ShortName)}{item.ShortName}";
+
+                if (i == 0)
+                {
+                    itemDescription = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(itemDescription);
+                }
+
+                itemString.Append(itemDescription);
+
+                if (i == itemsInRoom.Count - 1)
+                {
+                    itemString.Append(".");
+                }
+                else if (i == itemsInRoom.Count - 2)
+                {
+                    itemString.Append(", and ");
+                }
+                else
+                {
+                    itemString.Append(", ");
+                }
+            }
+
+            return itemString;
+        }
+
+        private StringBuilder GetRoomExitList(List<RoomExit> exitList)
+        {
+            StringBuilder exitString = new();
+
+            if (exitList.Count == 0) 
+            { 
+                exitString.Append("There are no obvious exits."); 
+
+                return exitString; 
+            }
+
+            exitString.Append("Obvious exits are: ");
+
+            for(int i = 0; i < exitList.Count; i++)
+            {
+                RoomExit exit = exitList[i];
+                
+                string exitDescription = $"{exit.ExitName}";
+
+                exitString.Append(exitDescription);
+
+                if(i == exitList.Count - 1)
+                {
+                    exitString.Append(".");
+                }
+                else if(i == exitList.Count - 2)
+                {
+                    exitString.Append(", and ");
+                }
+                else
+                {
+                    exitString.Append(", ");
+                }
+            }
+
+            return exitString;
+        }
+
+        private void AppendActorPresence(StringBuilder foo, int actorCount)
+        {
+            if(actorCount > 1)
+            {
+                foo.Append(" are here.");
+            }
+            else
+            {
+                foo.Append(" is here.");
             }
         }
     }

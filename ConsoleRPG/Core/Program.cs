@@ -11,7 +11,9 @@ namespace ConsoleRPG.Core
     {
         public delegate void CommandHandlerDelegate(string command);
         public event CommandHandlerDelegate OnCommand = delegate { };
-        Player player = new Player("You", "The player, so handsome.");
+        Player player = new Player("Seliris", "The player, so handsome.");
+
+        private static Program? program;
 
         bool runGame = true;
 
@@ -19,10 +21,16 @@ namespace ConsoleRPG.Core
         {
 
         }
+        
+        //Finishing note: you were going to work on changing the spawn locations to the Smithy and implement exit commands
+        //then local verbs
 
         static void Main(string[] args)
         {
-            Program program = new();
+            if (program == null)
+            {
+                program = new();
+            }
 
             program.Start();
         }
@@ -47,14 +55,6 @@ namespace ConsoleRPG.Core
             player.CurrentRoom = thevoid;
             guard.CurrentRoom = thevoid;
             
-            WriteLine("Current Room for Guard: " + guard.CurrentRoom.ToString());
-            WriteLine("Current room for Player: " + player.CurrentRoom.ToString());    
-
-            foreach(Actor a in player.CurrentRoom.ListOfActors())
-            {
-                WriteLine("Actor found in room: " + a.ShortName);
-            }
-
             while (runGame)
             {
                 WritePrompt();

@@ -11,6 +11,11 @@ namespace ConsoleRPG.Core.Library
         private static int id = 0;
         public int AgentId { get; private set; }
 
+        public Agent() : base()
+        {
+
+        }
+
         public Agent(string shortName, string description) : base(shortName, description)
         {
             ShortName = shortName;
